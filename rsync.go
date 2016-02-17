@@ -22,12 +22,8 @@ func Sync(via string, port uint, src, dst string, verbose bool) {
 		"--delete",
 		"--force",
 		"--executability",
-		"--compress",
-	}
-
-	ripath := getRsyncIgnorePath()
-	if ripath != "" {
-		args = append(args, `--exclude-from='`+ripath+`'`)
+		"--filter='dir-merge /.rsync-filter'",
+		"--filter='exclude .rsync-filter'",
 	}
 
 	if strings.HasPrefix(via, "rsync://") {
@@ -58,14 +54,4 @@ func Sync(via string, port uint, src, dst string, verbose bool) {
 		}
 		lastSyncError = err.Error()
 	}
-}
-
-func getRsyncIgnorePath() string {
-	if _, err := os.Stat(".rsyncignore"); err == nil {
-		abs, err := filepath.Abs(".rsyncignore")
-		if err == nil {
-			return abs
-		}
-	}
-	return ""
 }
